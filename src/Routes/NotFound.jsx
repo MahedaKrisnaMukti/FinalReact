@@ -5,11 +5,14 @@ import "../style/style.css";
 
 const NotFound = () => {
   const navigate = useNavigate();
+    const handleBack = () => {
+        navigate(-1);
+      };
 
   return (
     <div className="notfound">
       <h1>404 | Not Found</h1>
-      <button data-testid="back" onClick={navigate}>
+      <button data-testid="back" onClick={handleBack}>
         Take Me Back
       </button>
       {/* TODO: answer here */}

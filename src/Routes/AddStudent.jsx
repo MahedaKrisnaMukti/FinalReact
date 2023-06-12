@@ -1,35 +1,32 @@
-// TODO: answer here
-import React, { useState } from "react";
-import "../style/style.css";
+import { useState } from "react";
+import React from "react";
+import NavBar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
-const AddStudent = ({ history }) => {
-  // TODO: answer here
-  const [formData, setFormData] = useState({
-    fullname: "",
-    profilePicture: "",
-    address: "",
-    phoneNumber: "",
-    birthDate: "",
-    gender: "",
-    programStudy: "",
-  });
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+const AddStudent = () => {
+  const navigate = useNavigate();
+  const [fullname, setFullname] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [gender, setGender] = useState("");
+  const [programStudy, setProgramStudy] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const faculty = getFacultyByProgramStudy(formData.programStudy);
+    const faculty = getFacultyByProgramStudy(programStudy);
 
-    const newStudent = {
-      ...formData,
+    const studentData = {
+      fullname,
+      profilePicture,
+      address,
+      phoneNumber,
+      birthDate,
+      gender,
       faculty,
+      programStudy,
     };
 
     try {
@@ -38,12 +35,11 @@ const AddStudent = ({ history }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newStudent),
+        body: JSON.stringify(studentData),
       });
-
-      history.push("/student");
-    } catch (error) {
-      console.log(error);
+      navigate("/student");
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -70,101 +66,91 @@ const AddStudent = ({ history }) => {
   };
 
   return (
-    <div className="add-student">
-      <h1>Add Student</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Full Name:
+    <>
+      <NavBar />
+      <div className="container-student">
+        <h3>Add Student</h3>
+      </div>
+      <br />
+      <form id="form-student" onSubmit={handleSubmit}>
+        <div className="item">
+          <label htmlFor="input-name">Fullname</label>
           <input
             type="text"
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
+            id="input-name"
             data-testid="name"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
           />
-        </label>
-        <label>
-          Profile Picture:
+        </div>
+        <div className="item">
+          <label htmlFor="input-profile">Profile Picture</label>
           <input
             type="text"
-            name="profilePicture"
-            value={formData.profilePicture}
-            onChange={handleChange}
+            id="input-profile"
             data-testid="profilePicture"
+            value={profilePicture}
+            onChange={(e) => setProfilePicture(e.target.value)}
           />
-        </label>
-        <label>
-          Address:
+        </div>
+        <div className="item">
+          <label htmlFor="input-address">Adress</label>
           <input
             type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
+            id="input-address"
             data-testid="address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
           />
-        </label>
-        <label>
-          Phone Number:
+        </div>
+        <div className="item">
+          <label htmlFor="input-phone">Phone Number</label>
           <input
             type="text"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
+            id="input-phone"
             data-testid="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
           />
-        </label>
-        <label>
-          Birth Date:
+        </div>
+        <div>
+          <label htmlFor="input-date">Birth Date</label>
           <input
             type="date"
-            name="birthDate"
-            value={formData.birthDate}
-            onChange={handleChange}
+            id="input-date"
             data-testid="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
           />
-        </label>
-        <label>
-          Gender:
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
+        </div>
+        <div>
+          <label htmlFor="input-gender">Gender</label>
+          <input
+            type="text"
+            id="input-gender"
             data-testid="gender"
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </label>
-        <label>
-          Program Study:
-          <select
-            name="programStudy"
-            value={formData.programStudy}
-            onChange={handleChange}
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+          />
+        </div>
+        <div className="item">
+          <label htmlFor="input-prody">Program Study</label>
+          <input
+            type="text"
+            id="input-prody"
             data-testid="prody"
-          >
-            <option value="">Select Program Study</option>
-            <option value="Ekonomi">Ekonomi</option>
-            <option value="Manajemen">Manajemen</option>
-            <option value="Akuntansi">Akuntansi</option>
-            <option value="Administrasi Publik">Administrasi Publik</option>
-            <option value="Administrasi Bisnis">Administrasi Bisnis</option>
-            <option value="Hubungan Internasional">
-              Hubungan Internasional
-            </option>
-            <option value="Teknik Sipil">Teknik Sipil</option>
-            <option value="Arsitektur">Arsitektur</option>
-            <option value="Matematika">Matematika</option>
-            <option value="Fisika">Fisika</option>
-            <option value="Informatika">Informatika</option>
-          </select>
-        </label>
-        <button type="submit" data-testid="add-btn">
-          Add Student
-        </button>
+            value={programStudy}
+            onChange={(e) => setProgramStudy(e.target.value)}
+          />
+        </div>
+        <input
+          type="submit"
+          value="Add student"
+          id="add-btn"
+          data-testid="add-btn"
+        />
       </form>
-    </div>
+    </>
   );
 };
 

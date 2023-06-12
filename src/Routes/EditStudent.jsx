@@ -1,145 +1,190 @@
-// TODO: answer here
 import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import NavBar from "../components/Navbar";
 
-const EditStudent = ({ match, history }) => {
-  // TODO: answer here
-  const [formData, setFormData] = useState(null);
+const EditStudent = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [formData, setFormData] = useState({
+    fullname: "",
+    address: "",
+    phoneNumber: "",
+    birthDate: "",
+    gender: "",
+    programStudy: "",
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/student/${match.params.id}`
-        );
-        const data = await response.json();
+    setLoading(true);
+    fetch(`http://localhost:3001/student/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
         setFormData(data);
         setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const {
+      fullname,
+      profilePicture,
+      address,
+      phoneNumber,
+      birthDate,
+      gender,
+      programStudy,
+    } = formData;
+
+    const faculty = getFacultyByProgramStudy(programStudy);
+
+    const updatedStudent = {
+      fullname,
+      profilePicture,
+      address,
+      phoneNumber,
+      birthDate,
+      gender,
+      faculty,
+      programStudy,
     };
 
-    fetchStudentData();
-  }, [match.params.id]);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
     try {
-      await fetch(`http://localhost:3001/student/${match.params.id}`, {
+      await fetch(`http://localhost:3001/student/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updatedStudent),
       });
+      navigate("/student");
+    } catch (err) {
+      console.log(err);
+    }
 
-      history.push("/student");
-    } catch (error) {
-      console.log(error);
+    setLoading(false);
+  };
+
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.id]: event.target.value });
+  };
+
+  const getFacultyByProgramStudy = (programStudy) => {
+    switch (programStudy) {
+      case "Ekonomi":
+      case "Manajemen":
+      case "Akuntansi":
+        return "Fakultas Ekonomi";
+      case "Administrasi Publik":
+      case "Administrasi Bisnis":
+      case "Hubungan Internasional":
+        return "Fakultas Ilmu Sosial dan Politik";
+      case "Teknik Sipil":
+      case "Arsitektur":
+        return "Fakultas Teknik";
+      case "Matematika":
+      case "Fisika":
+      case "Informatika":
+        return "Fakultas Teknologi Informasi dan Sains";
+      default:
+        return "";
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
   return (
-    <div className="edit-student">
-      <h1>Edit Student</h1>
-      <img src={formData.profilePicture} alt="Profile" />
-      <form onSubmit={handleSubmit}>
-        <label>
-          Full Name:
-          <input
-            type="text"
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            data-testid="name"
-          />
-        </label>
-        <label>
-          Address:
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            data-testid="address"
-          />
-        </label>
-        <label>
-          Phone Number:
-          <input
-            type="text"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            data-testid="phoneNumber"
-          />
-        </label>
-        <label>
-          Birth Date:
-          <input
-            type="date"
-            name="birthDate"
-            value={formData.birthDate}
-            onChange={handleChange}
-            data-testid="date"
-          />
-        </label>
-        <label>
-          Gender:
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            data-testid="gender"
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </label>
-        <label>
-          Program Study:
-          <select
-            name="programStudy"
-            value={formData.programStudy}
-            onChange={handleChange}
-            data-testid="prody"
-          >
-            <option value="">Select Program Study</option>
-            <option value="Ekonomi">Ekonomi</option>
-            <option value="Manajemen">Manajemen</option>
-            <option value="Akuntansi">Akuntansi</option>
-            <option value="Administrasi Publik">Administrasi Publik</option>
-            <option value="Administrasi Bisnis">Administrasi Bisnis</option>
-            <option value="Hubungan Internasional">
-              Hubungan Internasional
-            </option>
-            <option value="Teknik Sipil">Teknik Sipil</option>
-            <option value="Arsitektur">Arsitektur</option>
-            <option value="Matematika">Matematika</option>
-            <option value="Fisika">Fisika</option>
-            <option value="Informatika">Informatika</option>
-          </select>
-        </label>
-        <button type="submit" data-testid="edit-btn">
-          Edit Student
-        </button>
-      </form>
-    </div>
+    <>
+      <NavBar />
+      {loading ? (
+        <p>Loading ...</p>
+      ) : (
+        <div className="edit-std">
+          <div className="image">
+            <img
+              src={formData.profilePicture}
+              alt="Profile"
+              className="image"
+            />
+          </div>
+          <form class="form-edit" onSubmit={handleSubmit}>
+            <div className="item">
+              <label htmlFor="fullname">Full Name:</label>
+              <input
+                type="text"
+                id="fullname"
+                data-testid="name"
+                value={formData.fullname}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="item">
+              <label htmlFor="address">Address:</label>
+              <input
+                type="text"
+                id="address"
+                data-testid="address"
+                value={formData.address}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="item">
+              <label htmlFor="phoneNumber">Phone Number:</label>
+              <input
+                type="text"
+                id="phoneNumber"
+                data-testid="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid-container">
+              <div>
+                <label htmlFor="birthDate">Birth Date:</label>
+                <input
+                  type="date"
+                  id="birthDate"
+                  data-testid="date"
+                  value={formData.birthDate}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="gender">Gender:</label>
+                <input
+                  type="text"
+                  id="gender"
+                  data-testid="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+            <div className="item">
+              <label htmlFor="programStudy">Program Study:</label>
+              <input
+                type="text"
+                id="programStudy"
+                data-testid="prody"
+                value={formData.programStudy}
+                onChange={handleChange}
+              />
+            </div>
+            <input
+              type="submit"
+              value="Edit Student"
+              id="edit-btn"
+              data-testid="edit-btn"
+            />
+          </form>
+        </div>
+      )}
+    </>
   );
 };
 

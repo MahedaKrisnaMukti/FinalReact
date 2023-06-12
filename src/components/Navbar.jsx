@@ -7,17 +7,17 @@ const NavBar = () => {
   return (
     // TODO: answer here
     <nav className="navbar">
-      <div className="navbar__title">
+      <div className="navbar-title">
         <Link to="/" data-testid="home-page">
           Student Portal
         </Link>
       </div>
-      <div className="navbar__links">
+      <div className="navbar-links">
         <Link to="/student" data-testid="student-page">
-          All Students
+          <button className="student">Student</button>
         </Link>
         <Link to="/add" data-testid="add-page">
-          Add Student
+          <button className="add-student">Add Student</button>
         </Link>
       </div>
     </nav>

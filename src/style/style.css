@@ -37,20 +37,13 @@
   padding: 10px;
 }
 
-.navbar__title a {
-  color: #000;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.navbar__links a {
-  color: #333;
+.navbar-links {
+  color: green ;
   text-decoration: none;
   margin-right: 10px;
 }
 
-.navbar__links a:hover {
+.navbar-links a:hover {
   color: #555;
 }
 
